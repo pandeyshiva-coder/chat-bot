@@ -97,13 +97,17 @@ def processCommand(c):
             speak("I heard your command, but my Gemini API key is missing. Please add it to the dot env file.")
             return
             
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
         try:
-            genai.configure(api_key=gemini_key)
-            model = genai.GenerativeModel('gemini-1.5-flash',
-                system_instruction="You are a short-spoken virtual assistant named Jarvis skilled in general tasks. Always respond in 1 or 2 short sentences max."
+            client = genai.Client(api_key=gemini_key)
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=c,
+                config=types.GenerateContentConfig(
+                    system_instruction="You are a short-spoken virtual assistant named Jarvis skilled in general tasks. Always respond in 1 or 2 short sentences max.",
+                )
             )
-            response = model.generate_content(c)
             print(f"Jarvis AI: {response.text}")
             speak(response.text)
         except Exception as e:
