@@ -1,17 +1,23 @@
+import os
 from openai import OpenAI
- 
-# pip install openai 
-# if you saved the key under a different environment variable name, you can do something like:
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize OpenAI Client using the key from .env file
 client = OpenAI(
-  api_key="<YOUR_OPENAI_API_KEY>",
+  api_key=os.getenv("OPENAI_API_KEY", ""),
 )
 
-completion = client.chat.completions.create(
-  model="gpt-3.5-turbo",
-  messages=[
-    {"role": "system", "content": "You are a virtual assistant named jarvis skilled in general tasks like Alexa and Google Cloud"},
-    {"role": "user", "content": "what is coding"}
-  ]
-)
-
-print(completion.choices[0].message.content)
+try:
+    completion = client.chat.completions.create(
+      model="gpt-3.5-turbo",
+      messages=[
+        {"role": "system", "content": "You are a virtual assistant named jarvis skilled in general tasks like Alexa and Google Cloud"},
+        {"role": "user", "content": "what is coding"}
+      ]
+    )
+    print(completion.choices[0].message.content)
+except Exception as e:
+    print(f"Error communicating with OpenAI: {e}")
