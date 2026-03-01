@@ -147,8 +147,8 @@ if __name__ == "__main__":
                 print(f"Recognized word: {word}") # Debug output
                 
                 # Check for global exit command
-                if word.lower() in ["sleep", "terminate", "shut down", "shutdown"]:
-                    speak("Shutting down the system. Goodbye!")
+                if word.lower() in ["so ja", "so jao", "sleep", "terminate", "shut down", "shutdown"]:
+                    speak("Thik hai sir, main so raha hoon. Goodbye!")
                     import sys
                     sys.exit(0)
                     
