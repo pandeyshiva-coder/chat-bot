@@ -55,14 +55,13 @@ def processCommand(c):
             return
 
     if c_lower.startswith("play"):
-        words = c_lower.split(" ")
-        if len(words) > 1:
-            song = words[1]
-            link = musicLibrary.music.get(song)
-            if link:
-                webbrowser.open(link)
-            else:
-                speak("Sorry, I could not find this song in your library.")
+        import pywhatkit
+        song = c_lower.replace("play", "").strip()
+        if song:
+            speak(f"Playing {song} on YouTube")
+            pywhatkit.playonyt(song)
+        else:
+            speak("What do you want me to play?")
         return
 
     elif "news" in c_lower:
