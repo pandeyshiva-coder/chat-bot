@@ -49,10 +49,19 @@ def processCommand(c):
         "linkedin": "https://linkedin.com"
     }
 
-    for site, url in websites.items():
-        if f"open {site}" in c_lower:
-            webbrowser.open(url)
-            return
+    if c_lower.startswith("open"):
+        from AppOpener import open as open_app
+        # Check if it's a website first
+        app_or_site = c_lower.replace("open ", "").strip()
+        
+        if app_or_site in websites:
+            speak(f"Opening {app_or_site}")
+            webbrowser.open(websites[app_or_site])
+        else:
+            # If not a website, try opening a desktop application
+            speak(f"Opening application {app_or_site}")
+            open_app(app_or_site, match_closest=True)
+        return
 
     if c_lower.startswith("play"):
         import pywhatkit
