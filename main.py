@@ -145,6 +145,13 @@ if __name__ == "__main__":
             try:
                 word = r.recognize_google(audio)
                 print(f"Recognized word: {word}") # Debug output
+                
+                # Check for global exit command
+                if word.lower() in ["sleep", "terminate", "shut down", "shutdown"]:
+                    speak("Shutting down the system. Goodbye!")
+                    import sys
+                    sys.exit(0)
+                    
             except sr.UnknownValueError:
                 continue # Ignore unrecognized chatter
             except sr.RequestError as e:
