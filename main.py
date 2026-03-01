@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 recognizer = sr.Recognizer()
+recognizer.pause_threshold = 1.2
+recognizer.energy_threshold = 300
 engine = pyttsx3.init() 
 newsapi = os.getenv("GNEWS_API_KEY", "")
 
@@ -128,6 +130,8 @@ if __name__ == "__main__":
     while True:
         # Listen for the wake word "Jarvis"
         r = sr.Recognizer()
+        r.pause_threshold = 1.2
+        r.energy_threshold = 300
          
         print("recognizing...")
         try:
@@ -154,9 +158,10 @@ if __name__ == "__main__":
                     with sr.Microphone() as source:
                         print("Jarvis Active... waiting for your command")
                         try:
-                            # Listen for command with reasonable timeouts
+                            # Listen for command with increased pause threshold so it listens fully
                             r.adjust_for_ambient_noise(source, duration=0.2)
-                            audio = r.listen(source, timeout=10, phrase_time_limit=10)
+                            r.pause_threshold = 1.5
+                            audio = r.listen(source, timeout=10, phrase_time_limit=15)
                             command = r.recognize_google(audio).lower()
                             print(f"You said: {command}")
                             
