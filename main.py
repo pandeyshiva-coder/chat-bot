@@ -33,10 +33,10 @@ def speak(text):
         pygame.time.Clock().tick(10)
     
     pygame.mixer.music.unload()
-    try:
-        os.remove("temp.mp3") 
-    except Exception as e:
-        print(f"Failed to remove temp.mp3: {e}")
+    pygame.mixer.music.unload()
+    # On Windows, Pygame can take a moment to release the file handle, 
+    # causing PermissionError. We safely overwrite it on the next speak() call anyway.
+    pass
 
 def processCommand(c):
     c_lower = c.lower()
@@ -101,10 +101,14 @@ if __name__ == "__main__":
         try:
             with sr.Microphone() as source:
                 print("Listening...")
-                audio = r.listen(source, timeout=2, phrase_time_limit=1)
+                # Adjust for ambient noise for better accuracy
+                r.adjust_for_ambient_noise(source, duration=0.5)
+                # Listen without strict timeout limits
+                audio = r.listen(source, timeout=5, phrase_time_limit=3)
             
             try:
                 word = r.recognize_google(audio)
+                print(f"Recognized word: {word}") # Debug output
             except sr.UnknownValueError:
                 continue # Ignore unrecognized chatter
             except sr.RequestError as e:
@@ -112,7 +116,7 @@ if __name__ == "__main__":
                 continue
 
             if word.lower() == "jarvis":
-                speak("Ya")
+                speak("Yes")
                 # Listen for command
                 with sr.Microphone() as source:
                     print("Jarvis Active...")
