@@ -90,6 +90,30 @@ def processCommand(c):
             print("News error:", e)
             speak("There is a problem fetching news.")
 
+    # If the command doesn't match any specific fixed command, pass it to OpenAI (Jarvis)
+    else:
+        openai_key = os.getenv("OPENAI_API_KEY", "")
+        if not openai_key or openai_key == "your_openai_api_key_here":
+            speak("I heard your command, but my OpenAI API key is missing. Please add it to the dot env file.")
+            return
+            
+        from openai import OpenAI
+        try:
+            client = OpenAI(api_key=openai_key)
+            completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a short-spoken virtual assistant named Jarvis skilled in general tasks. Always respond in 1 or 2 short sentences max."},
+                    {"role": "user", "content": c}
+                ]
+            )
+            response = completion.choices[0].message.content
+            print(f"Jarvis AI: {response}")
+            speak(response)
+        except Exception as e:
+            print(f"Error communicating with OpenAI: {e}")
+            speak("Sorry, I am having trouble connecting to my AI brain.")
+
 
 if __name__ == "__main__":
     speak("Initializing Jarvis....")
