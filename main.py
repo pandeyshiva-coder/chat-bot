@@ -136,18 +136,33 @@ if __name__ == "__main__":
                 continue
 
             if word.lower() == "jarvis":
-                speak("Yes")
-                # Listen for command
-                with sr.Microphone() as source:
-                    print("Jarvis Active...")
-                    try:
-                        audio = r.listen(source, timeout=5, phrase_time_limit=5)
-                        command = r.recognize_google(audio)
-                        processCommand(command)
-                    except sr.UnknownValueError:
-                        speak("Sorry, I didn't get that.")
-                    except sr.RequestError as e:
-                        speak("Network error.")
+                speak("Yes, I am listening.")
+                # Continuous Conversation Loop
+                while True:
+                    with sr.Microphone() as source:
+                        print("Jarvis Active... waiting for your command")
+                        try:
+                            # Listen for command with reasonable timeouts
+                            r.adjust_for_ambient_noise(source, duration=0.2)
+                            audio = r.listen(source, timeout=10, phrase_time_limit=10)
+                            command = r.recognize_google(audio).lower()
+                            print(f"You said: {command}")
+                            
+                            # Check if user wants to stop the conversation
+                            if command in ["stop", "exit", "quit", "bye", "goodbye"]:
+                                speak("Goodbye! Call me if you need me.")
+                                break # Exit the continuous loop and wait for wake word again
+                                
+                            processCommand(command)
+                        except sr.UnknownValueError:
+                            speak("Sorry, I didn't get that. Please say that again.")
+                        except sr.WaitTimeoutError:
+                            # If the user doesn't say anything for 10 seconds, go back to sleep
+                            speak("I did not hear anything, going back to sleep.")
+                            break
+                        except sr.RequestError as e:
+                            speak("Network error.")
+                            break
 
         except sr.WaitTimeoutError:
             pass # Ignore read timeouts
